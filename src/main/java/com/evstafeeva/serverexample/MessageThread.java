@@ -1,6 +1,5 @@
 package com.evstafeeva.serverexample;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,24 +26,32 @@ public class MessageThread extends Thread {
     @Override
     public void run() {
         try {
-            //авторизация
-//            out.write("Представьтесь.\n");
-//            out.flush();
-//            name = in.readLine();
-//            //сообщение о том, что кто-то подключился
-//            for (MessageThread client : listClient) {
-//                client.write("      " + name + " подключился кнашему чату!\n");
-//            }
-            //реализуем рассылку того, что каждый клиент написал
-            while (true) {
-                System.out.println("Ждем сообщения от " + clientSocket.toString());
-                String message = in.readLine();
-                System.out.println("Сообщение пришло от " + clientSocket.toString() + " " + message);
-
+            try {
+                //авторизация
+                out.println("Представьтесь:");
+                name = in.readLine();
+                //сообщение о том, что кто-то подключился
                 for (MessageThread client : listClient) {
-                    System.out.println("Послали сообщение " + client.clientSocket.toString());
-                    client.write("[ " + name + " ]:" + message);
+                    if (client == this)
+                        continue;
+                    client.write(name + " подключился к нашему чату!");
                 }
+                //реализуем рассылку того, что каждый клиент написал
+                while (true) {
+                    String message = in.readLine();
+                    System.out.println("Сообщение пришло от " + clientSocket.toString() + " " + message);
+
+                    for (MessageThread client : listClient) {
+                        if (client == this)
+                            continue;
+                        client.write("[ " + name + " ]:" + message);
+                    }
+                }
+            }
+            finally{
+                clientSocket.close();
+                in.close();
+                out.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,8 +59,7 @@ public class MessageThread extends Thread {
     }
 
     public void write(String string) {
-
-            System.out.println("Сообщение <" + string + "> ушло к " + clientSocket.toString());
-            out.println(string + "\n");
+        System.out.print("Сообщение <" + string + "> ушло к " + clientSocket.toString());
+        out.println(string);
     }
 }

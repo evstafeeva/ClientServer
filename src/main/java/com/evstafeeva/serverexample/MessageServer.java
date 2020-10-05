@@ -16,7 +16,7 @@ public class MessageServer {
 
     public MessageServer(int port) throws IOException {
         server = new ServerSocket(port);
-        System.out.println("Сервер запщен на локлаьной машине, порт: " + port);
+        System.out.println("Сервер запущен на локлаьной машине, порт: " + port);
     }
 
     public void start() throws IOException {
